@@ -24,7 +24,7 @@ sections:
       buttons:
         - text: My Fine Art Works
           icon: academicons/arxiv
-          url: uploads/黄宝桦的个人作品集.pdf
+          url: uploads/黄宝桦个人作品集.pdf
         - text: My Media
           icon: brands/youtube
           url: https://youtube.com
