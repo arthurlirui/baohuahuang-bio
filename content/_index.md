@@ -22,10 +22,10 @@ sections:
       # Need a custom icon?
       # Add an SVG image to the `assets/media/icons/` folder and reference it in the `icon` field below
       buttons:
-        - text: Read my latest paper on LLMs
+        - text: My Fine Art Works
           icon: academicons/arxiv
-          url: https://arxiv.org/abs/2304.01852
-        - text: Watch my new YouTube video to achieve 20x productivity
+          url: uploads/黄宝桦的个人作品集.pdf
+        - text: My Media
           icon: brands/youtube
           url: https://youtube.com
         - text: Connect with me on LinkedIn
