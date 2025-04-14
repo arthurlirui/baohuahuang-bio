@@ -1,5 +1,5 @@
 ---
-title: 'Home'
+title: 'Hahaha'
 date: 2023-10-24
 type: landing
 
@@ -25,10 +25,10 @@ sections:
         - text: My Fine Art Works
           icon: academicons/arxiv
           url: uploads/黄宝桦个人作品集.pdf
-        - text: My Media
-          icon: brands/youtube
-          url: https://youtube.com
-        - text: Connect with me on LinkedIn
-          icon: brands/linkedin
-          url: https://linkedin.com
+        #- text: My Media
+        #  icon: brands/youtube
+        #  url: https://youtube.com
+        #- text: Connect with me on LinkedIn
+        #  icon: brands/linkedin
+        #  url: https://linkedin.com
 ---
