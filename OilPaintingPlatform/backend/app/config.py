@@ -6,6 +6,7 @@ hard-coded. Copy `.env.example` to `.env` and fill in the keys you have.
 from __future__ import annotations
 
 import os
+from functools import cached_property
 from functools import lru_cache
 from pathlib import Path
 from typing import List
@@ -20,11 +21,15 @@ OUTPUT_DIR = BACKEND_ROOT / "output"
 DATA_DIR = BACKEND_ROOT / "app" / "data"
 
 
-def _parse_cors_origins(raw: str | None, *, fallback: List[str]) -> List[str]:
-    """Parse a comma-separated CORS_ORIGINS env var, or return fallback."""
-    if not raw:
-        return fallback
-    # "*" allows all origins (convenient for demo; tighten in production)
+def _parse_cors_origins(raw: str | None) -> List[str]:
+    """Parse a comma-separated CORS_ORIGINS env var into a list.
+
+    - "*" → ["*"]  (allow all origins)
+    - "https://a.com,https://b.com" → ["https://a.com", "https://b.com"]
+    - "" or None → []
+    """
+    if not raw or not raw.strip():
+        return []
     if raw.strip() == "*":
         return ["*"]
     return [o.strip() for o in raw.split(",") if o.strip()]
@@ -42,19 +47,12 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     debug: bool = True
 
-    # CORS – allow the Vite dev server by default.
+    # CORS – stored as a raw string so pydantic-settings doesn't try to JSON-
+    # parse it. Use the `cors_origins_list` property to get the parsed list.
     # In production, set the CORS_ORIGINS env var to a comma-separated list,
     # e.g. CORS_ORIGINS=https://baohuahuang-bio.vercel.app,https://example.com
-    cors_origins: List[str] = Field(
-        default_factory=lambda: _parse_cors_origins(
-            os.getenv("CORS_ORIGINS"),
-            fallback=[
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "http://localhost:4173",
-            ],
-        )
-    )
+    # or CORS_ORIGINS=* to allow all origins.
+    cors_origins: str = ""
 
     # Output / storage
     output_dir: Path = OUTPUT_DIR
@@ -86,6 +84,19 @@ class Settings(BaseSettings):
     # Generation defaults
     default_size: str = "1024x1024"
     request_timeout: int = 120
+
+    @cached_property
+    def cors_origins_list(self) -> List[str]:
+        """Parsed CORS origins list, falling back to dev defaults."""
+        parsed = _parse_cors_origins(self.cors_origins)
+        if parsed:
+            return parsed
+        # Dev defaults when CORS_ORIGINS is not set
+        return [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:4173",
+        ]
 
 
 @lru_cache
