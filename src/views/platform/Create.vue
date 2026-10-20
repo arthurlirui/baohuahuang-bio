@@ -113,14 +113,27 @@ const composedPreview = computed(() => {
 })
 
 // ---- Download ----
-function downloadImage(url, filename) {
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename || 'oil-painting.png'
-  link.target = '_blank'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+async function downloadImage(url, filename) {
+  const fullUrl = fileUrl(url)
+  try {
+    // Fetch the image as a blob so the download attribute works even
+    // when the image is served from a different origin (Render backend).
+    const res = await fetch(fullUrl)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const blob = await res.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = filename || 'oil-painting.png'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(blobUrl)
+  } catch (e) {
+    // Fallback: open the image in a new tab so the user can save it manually
+    console.error('Download failed, falling back to open in new tab:', e)
+    window.open(fullUrl, '_blank')
+  }
 }
 
 function getFilename(img, index) {
@@ -423,7 +436,7 @@ onMounted(() => {
               <button
                 class="btn btn-outline"
                 style="width:100%; padding:8px; font-size:14px;"
-                @click="downloadImage(img.url, getFilename(img, i))"
+                @click="downloadImage(fileUrl(img.url), getFilename(img, i))"
               >
                 ⬇ 下载图片
               </button>

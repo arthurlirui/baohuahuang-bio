@@ -16,10 +16,13 @@ def create_app() -> FastAPI:
         description="艺术与油画教学平台 · 文生图后端 API",
     )
 
+    # CORS: when origins is ["*"], credentials must be False (browser spec).
+    origins = settings.cors_origins_list
+    allow_all = "*" in origins
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_origins_list,
-        allow_credentials=True,
+        allow_origins=origins,
+        allow_credentials=not allow_all,
         allow_methods=["*"],
         allow_headers=["*"],
     )
