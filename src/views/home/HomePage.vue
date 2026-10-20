@@ -48,7 +48,7 @@ import { siteConfig } from '../../data/site-config'
                 <p class="affiliation-role">{{ a.role }}</p>
               </div>
             </div>
-            <a v-if="siteConfig.resume?.url" :href="siteConfig.resume.url" class="btn btn-outline" style="display:block; margin-top:16px; text-align:center;">
+            <a v-if="siteConfig.resume?.url" :href="encodeURI(siteConfig.resume.url)" class="btn btn-outline" style="display:block; margin-top:16px; text-align:center;" download>
               ⬇ {{ siteConfig.resume.label }}
             </a>
           </aside>
