@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# Python backend
+OilPaintingPlatform/backend/__pycache__/
+OilPaintingPlatform/backend/.env
+OilPaintingPlatform/backend/output/
+*.pyc
+__pycache__/
+
+# Vite
+.vite/
