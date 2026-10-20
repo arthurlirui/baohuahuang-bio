@@ -1,8 +1,10 @@
 <script setup>
+import { onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useStore } from '../../stores/app'
 
 const store = useStore()
+onMounted(() => store.bootstrap())
 </script>
 
 <template>
