@@ -497,13 +497,17 @@ onMounted(() => {
             <p>填写左侧表单，点击下方按钮开始创作</p>
           </div>
         </div>
-
-        <!-- Generate button moved below the result card -->
-        <button class="btn btn-primary" style="width:100%; padding:14px; margin-top:20px;" :disabled="loading" @click="handleGenerate">
-          {{ loading ? '正在生成…' : '🎨 生成油画' }}
-        </button>
       </div>
     </div>
+
+    <!-- Fixed generate button — always visible, never covered by results -->
+    <button
+      class="btn btn-primary generate-fab"
+      :disabled="loading"
+      @click="handleGenerate"
+    >
+      {{ loading ? '正在生成…' : '🎨 生成油画' }}
+    </button>
   </div>
 </template>
 
@@ -524,5 +528,36 @@ onMounted(() => {
   background: #fdf6ee;
   border-color: var(--primary);
   border-width: 2px;
+}
+
+/* Fixed generate button — always visible at bottom-right */
+.generate-fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 200;
+  padding: 14px 32px;
+  font-size: 16px;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(139, 94, 60, 0.35);
+  transition: all 0.3s;
+}
+.generate-fab:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(139, 94, 60, 0.45);
+}
+.generate-fab:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .generate-fab {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: calc(100% - 32px);
+    border-radius: 12px;
+  }
 }
 </style>
