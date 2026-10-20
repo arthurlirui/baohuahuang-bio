@@ -19,6 +19,12 @@ const result = ref(null)
 const styleExpanded = ref(false)
 const styleSearch = ref('')
 
+// ---- Collapsible prompt library ----
+const promptExpanded = ref(false)
+function togglePromptList() {
+  promptExpanded.value = !promptExpanded.value
+}
+
 const filteredStyles = computed(() => {
   if (!styleSearch.value.trim()) return store.styles
   const q = styleSearch.value.toLowerCase()
@@ -372,39 +378,53 @@ onMounted(() => {
           </select>
         </div>
 
-        <!-- Prompt library -->
+        <!-- Prompt library (collapsible) -->
         <div class="card" style="margin-bottom:20px;">
-          <label>💡 内置提示词库（点击使用）</label>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 14px;">
-            <button
-              v-for="c in promptCategories"
-              :key="c"
-              class="btn"
-              :class="promptFilter === c ? 'btn-primary' : 'btn-outline'"
-              style="padding:4px 12px; font-size:13px;"
-              @click="promptFilter = c"
-            >{{ c }}</button>
+          <div
+            style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none;"
+            @click="togglePromptList"
+          >
+            <label style="margin:0; cursor:pointer;">💡 内置提示词库</label>
+            <span style="font-size:13px; color:var(--text-light);">
+              {{ filteredPrompts.length }} 个模板
+              <span style="margin-left:8px; font-size:16px;">{{ promptExpanded ? '▾' : '▸' }}</span>
+            </span>
           </div>
-          <div class="grid grid-3">
-            <div
-              v-for="tpl in filteredPrompts"
-              :key="tpl.id"
-              class="card"
-              style="padding:14px; cursor:pointer; border:2px solid transparent;"
-              @click="usePromptTemplate(tpl)"
-            >
-              <div style="display:flex; justify-content:space-between; align-items:start;">
-                <h4 style="color:var(--primary-dark); font-size:15px;">{{ tpl.title }}</h4>
-                <span class="badge">{{ tpl.category }}</span>
-              </div>
-              <p style="font-size:13px; color:var(--text-light); margin-top:6px;">{{ tpl.description }}</p>
-              <p style="font-size:12px; color:var(--text-light); margin-top:6px; word-break:break-all;">
-                "{{ tpl.prompt.substring(0, 60) }}{{ tpl.prompt.length > 60 ? '…' : '' }}"
-              </p>
-              <p v-if="store.styles.find(s => s.id === tpl.recommended_style)" style="font-size:12px; margin-top:6px;">
-                <span class="badge badge-accent">推荐: {{ store.styles.find(s => s.id === tpl.recommended_style).name }}</span>
-              </p>
+          <div v-if="promptExpanded">
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin:12px 0 14px;">
+              <button
+                v-for="c in promptCategories"
+                :key="c"
+                class="btn"
+                :class="promptFilter === c ? 'btn-primary' : 'btn-outline'"
+                style="padding:4px 12px; font-size:13px;"
+                @click="promptFilter = c"
+              >{{ c }}</button>
             </div>
+            <div style="max-height:360px; overflow-y:auto;">
+              <div class="grid grid-3">
+                <div
+                  v-for="tpl in filteredPrompts"
+                  :key="tpl.id"
+                  class="card"
+                  style="padding:14px; cursor:pointer; border:2px solid transparent;"
+                  @click="usePromptTemplate(tpl)"
+                >
+                  <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h4 style="color:var(--primary-dark); font-size:15px;">{{ tpl.title }}</h4>
+                    <span class="badge">{{ tpl.category }}</span>
+                  </div>
+                  <p style="font-size:13px; color:var(--text-light); margin-top:6px;">{{ tpl.description }}</p>
+                  <p style="font-size:12px; color:var(--text-light); margin-top:6px; word-break:break-all;">
+                    "{{ tpl.prompt.substring(0, 60) }}{{ tpl.prompt.length > 60 ? '…' : '' }}"
+                  </p>
+                  <p v-if="store.styles.find(s => s.id === tpl.recommended_style)" style="font-size:12px; margin-top:6px;">
+                    <span class="badge badge-accent">推荐: {{ store.styles.find(s => s.id === tpl.recommended_style).name }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="margin-top:10px; padding:6px 16px; font-size:13px; width:100%;" @click="promptExpanded = false">收起</button>
           </div>
         </div>
 
@@ -416,13 +436,10 @@ onMounted(() => {
           </p>
         </div>
 
-        <button class="btn btn-primary" style="width:100%; padding:14px;" :disabled="loading" @click="handleGenerate">
-          {{ loading ? '正在生成…' : '🎨 生成油画' }}
-        </button>
         <p v-if="error" style="color:var(--accent); margin-top:12px;">{{ error }}</p>
       </div>
 
-      <!-- Right: result -->
+      <!-- Right: result + generate button -->
       <div>
         <div class="card" style="position:sticky; top:80px;">
           <label>生成结果</label>
@@ -455,9 +472,14 @@ onMounted(() => {
           </div>
           <div v-else class="empty-state">
             <p>🎨</p>
-            <p>填写左侧表单，点击「生成油画」开始创作</p>
+            <p>填写左侧表单，点击下方按钮开始创作</p>
           </div>
         </div>
+
+        <!-- Generate button moved below the result card -->
+        <button class="btn btn-primary" style="width:100%; padding:14px; margin-top:20px;" :disabled="loading" @click="handleGenerate">
+          {{ loading ? '正在生成…' : '🎨 生成油画' }}
+        </button>
       </div>
     </div>
   </div>
