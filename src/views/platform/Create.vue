@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useStore } from '../../stores/app'
-import { generateImage } from '../../api'
+import { generateImage, fileUrl } from '../../api'
 import StyleCard from '../../components/platform/StyleCard.vue'
 
 const store = useStore()
@@ -419,7 +419,7 @@ onMounted(() => {
           </div>
           <div v-else-if="result">
             <div v-for="(img, i) in result.images" :key="i" style="margin-bottom:16px;">
-              <img :src="img.url" class="gen-image" style="margin-bottom:10px;" />
+              <img :src="fileUrl(img.url)" class="gen-image" style="margin-bottom:10px;" />
               <button
                 class="btn btn-outline"
                 style="width:100%; padding:8px; font-size:14px;"

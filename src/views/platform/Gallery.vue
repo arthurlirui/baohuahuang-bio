@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getGallery } from '../../api'
+import { getGallery, fileUrl } from '../../api'
 
 const items = ref([])
 const loading = ref(true)
@@ -25,7 +25,7 @@ onMounted(async () => {
     </div>
     <div v-else class="grid grid-3">
       <div v-for="item in items" :key="item.id" class="card" style="padding:14px;">
-        <img :src="item.url" class="gen-image" style="margin-bottom:12px;" />
+        <img :src="fileUrl(item.url)" class="gen-image" style="margin-bottom:12px;" />
         <span class="badge badge-accent">{{ item.style_name }}</span>
         <span class="badge" style="margin-left:4px;">{{ item.provider }}</span>
         <p style="font-size:13px; color:var(--text-light); margin-top:8px; word-break:break-all;">

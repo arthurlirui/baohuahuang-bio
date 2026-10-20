@@ -9,6 +9,24 @@ const http = axios.create({
   timeout: 180000,
 })
 
+/**
+ * Resolve a backend-relative URL (e.g. "/files/xxx.jpg") to a fully-qualified
+ * URL that works in production. In dev the Vite proxy handles /files, so the
+ * relative path is returned as-is. In production the backend origin is derived
+ * from VITE_API_BASE by stripping the trailing "/api".
+ */
+export function fileUrl(path) {
+  if (!path) return path
+  // Already a full URL (https://...) — return as-is
+  if (/^https?:\/\//.test(path)) return path
+  // In dev (no VITE_API_BASE), /files is proxied by Vite
+  const apiBase = import.meta.env.VITE_API_BASE
+  if (!apiBase) return path
+  // Derive backend origin: strip trailing /api
+  const backendOrigin = apiBase.replace(/\/api\/?$/, '')
+  return `${backendOrigin}${path.startsWith('/') ? '' : '/'}${path}`
+}
+
 export async function getHealth() {
   const { data } = await http.get('/health')
   return data

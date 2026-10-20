@@ -20,6 +20,16 @@ OUTPUT_DIR = BACKEND_ROOT / "output"
 DATA_DIR = BACKEND_ROOT / "app" / "data"
 
 
+def _parse_cors_origins(raw: str | None, *, fallback: List[str]) -> List[str]:
+    """Parse a comma-separated CORS_ORIGINS env var, or return fallback."""
+    if not raw:
+        return fallback
+    # "*" allows all origins (convenient for demo; tighten in production)
+    if raw.strip() == "*":
+        return ["*"]
+    return [o.strip() for o in raw.split(",") if o.strip()]
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=BACKEND_ROOT / ".env",
@@ -32,13 +42,18 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     debug: bool = True
 
-    # CORS – allow the Vite dev server by default
+    # CORS – allow the Vite dev server by default.
+    # In production, set the CORS_ORIGINS env var to a comma-separated list,
+    # e.g. CORS_ORIGINS=https://baohuahuang-bio.vercel.app,https://example.com
     cors_origins: List[str] = Field(
-        default_factory=lambda: [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:4173",
-        ]
+        default_factory=lambda: _parse_cors_origins(
+            os.getenv("CORS_ORIGINS"),
+            fallback=[
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://localhost:4173",
+            ],
+        )
     )
 
     # Output / storage

@@ -1,0 +1,29 @@
+# Render Blueprint — deploys the FastAPI backend as a Web Service.
+# Docs: https://render.com/docs/blueprint-spec
+# After deploying, set VITE_API_BASE on Vercel to: https://<your-service-name>.onrender.com/api
+
+services:
+  - type: web
+    name: baohuahuang-oilpainting-api
+    runtime: python
+    rootDir: OilPaintingPlatform/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: DEFAULT_PROVIDER
+        value: mock
+      - key: CORS_ORIGINS
+        # Comma-separated list of allowed origins.
+        # Add your Vercel frontend domain here after deployment, e.g.:
+        # https://baohuahuang-bio.vercel.app
+        value: "*"
+      # Optional: set API keys for real image generation
+      # - key: OPENAI_API_KEY
+      #   sync: false
+      # - key: DASHSCOPE_API_KEY
+      #   sync: false
+      # - key: ZHIPU_API_KEY
+      #   sync: false
