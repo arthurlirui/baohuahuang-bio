@@ -19,12 +19,12 @@ from ...schemas import GeneratedImage
 
 class PollinationsProvider(ImageProvider):
     name = "pollinations"
-    display_name = "Pollinations.ai（免费无需Key）"
-    description = "免费文生图，基于 Flux 模型，无需 API Key 即可使用"
-    is_free = True
+    display_name = "Pollinations.ai（Flux 模型）"
+    description = "基于 Flux 模型的文生图，可能需要付费/额度，失败时自动回退到 Mock"
+    is_free = False
 
     def available(self) -> bool:
-        return True  # always available, no key needed
+        return True
 
     def _generate(self, prompt, negative_prompt, size, n):
         w, h = size.lower().split("x")

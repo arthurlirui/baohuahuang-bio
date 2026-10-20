@@ -61,5 +61,23 @@
     "style_name": "印象派",
     "provider": "pollinations",
     "created_at": "2026-10-20T22:04:44"
+  },
+  {
+    "id": "4985150ad4e4",
+    "url": "/files/1792512694627_7a626bd8.svg",
+    "prompt": "a young woman reading by candlelight, oil painting, baroque style, tenebrism, strong chiaroscuro, dramatic contrast, dynamic composition, rich deep colors, oil painting on canvas, in the manner of Caravaggio / Rembrandt",
+    "style_id": "baroque",
+    "style_name": "巴洛克",
+    "provider": "mock",
+    "created_at": "2026-10-21T00:11:34"
+  },
+  {
+    "id": "4aed4cf64d9e",
+    "url": "/files/1792512716900_963e02c9.jpg",
+    "prompt": "a young woman reading by candlelight, oil painting, baroque style, tenebrism, strong chiaroscuro, dramatic contrast, dynamic composition, rich deep colors, oil painting on canvas, in the manner of Caravaggio / Rembrandt",
+    "style_id": "baroque",
+    "style_name": "巴洛克",
+    "provider": "pollinations",
+    "created_at": "2026-10-21T00:11:56"
   }
 ]

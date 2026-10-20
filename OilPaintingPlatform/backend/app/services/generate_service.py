@@ -39,15 +39,29 @@ def generate(request: GenerateRequest) -> GenerateResponse:
         }
 
     provider = get_provider(request.provider, credentials=creds)
-    images: List[GeneratedImage] = provider.generate(
-        prompt=composed,
-        negative_prompt=negative,
-        size=request.size,
-        n=request.n,
-    )
 
-    # Stamp provider name (mock fallback may differ from requested)
-    provider_name = provider.name
+    # Try the requested provider; on failure, fall back to mock so the
+    # user always gets a result (e.g. pollinations 402, openai auth error).
+    provider_name = request.provider
+    try:
+        images: List[GeneratedImage] = provider.generate(
+            prompt=composed,
+            negative_prompt=negative,
+            size=request.size,
+            n=request.n,
+        )
+    except Exception as exc:
+        if request.provider == "mock":
+            raise  # mock should never fail; if it does, surface the error
+        # Fall back to mock provider
+        mock_provider = get_provider("mock", credentials=None)
+        images = mock_provider.generate(
+            prompt=composed,
+            negative_prompt=negative,
+            size=request.size,
+            n=request.n,
+        )
+        provider_name = f"{request.provider}→mock回退"
 
     # Persist to gallery index
     _append_gallery(images, composed, style, provider_name)
