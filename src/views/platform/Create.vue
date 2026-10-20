@@ -178,7 +178,17 @@ async function handleGenerate() {
     }
     result.value = await generateImage(payload)
   } catch (e) {
-    error.value = e?.response?.data?.detail || e.message || '生成失败，请稍后重试'
+    const detail = e?.response?.data?.detail || e.message || '生成失败，请稍后重试'
+    // Show a user-friendly error message
+    if (detail.includes('402') || detail.includes('Payment Required')) {
+      error.value = '该生图模型当前不可用（需要付费额度）。请切换为 Mock（内置占位图）或配置 API Key 后重试。'
+    } else if (detail.includes('401') || detail.includes('Unauthorized')) {
+      error.value = 'API Key 无效或未配置。请在模型设置中填写正确的 API Key。'
+    } else if (detail.includes('429') || detail.includes('rate limit')) {
+      error.value = '请求过于频繁，请稍后重试。'
+    } else {
+      error.value = detail
+    }
   } finally {
     loading.value = false
   }
@@ -469,6 +479,18 @@ onMounted(() => {
                 <p style="margin-top:8px; color:var(--text); word-break:break-all;">{{ result.composed_prompt }}</p>
               </details>
             </div>
+          </div>
+          <div v-else-if="error" class="empty-state">
+            <p style="font-size:36px;">⚠️</p>
+            <p style="color:var(--accent); margin-bottom:12px;">{{ error }}</p>
+            <button
+              v-if="provider !== 'mock'"
+              class="btn btn-outline"
+              style="padding:8px 20px; font-size:14px;"
+              @click="provider = 'mock'; error = ''"
+            >
+              切换为 Mock（免费占位图）
+            </button>
           </div>
           <div v-else class="empty-state">
             <p>🎨</p>
